@@ -1,9 +1,13 @@
 import cv2
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 #define a class to take the image as input and the methods will split the image into different channels
 #if another channel is required that operation will be done in the specific method that requieres it
+#TODO: add plot option to plot specific wavelenght?
+#reference : https://www.neonscience.org/resources/learning-hub/tutorials/plot-spec-sig-tiles-python
+
 
 class image_process:
     """
@@ -107,13 +111,30 @@ class image_process:
         cv2.imshow('Laplacian filter', laplacian)
         self._close_windows()
 
+    
+    def get_wavelenghts(self, lower : int = 400, upper : int = 500) -> None:
+        hsv_image = cv2.cvtColor(self._img, cv2.COLOR_BGR2HSV)
+        mask = np.logical_and(hsv_image[..., 0] >= lower/2, hsv_image[..., 0] <= upper/2)
+        filtered_image = cv2.bitwise_and(self._img, self._img, mask=mask.astype(np.uint8))
+        cv2.imshow('Filtered Image', filtered_image)
+        self._close_windows()
+
+    
+    def plot_waves(self):
+        img = cv2.imread(self._path, cv2.IMREAD_UNCHANGED)
+
+
+        # Plot each channel separately
+        for i in range(img.shape[2]):
+            plt.imshow(img[:, :, i], cmap='gray')
+            plt.title(f'Channel {i}')
+            plt.show()
+
     def _close_windows(self) -> None:
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-#path = "C:/Users/valc2/Documents/ITESO/TOG/SPOT5.tif"
-path = "C:/Users/valc2/Documents/GitHub/Multispectal-Images-GUI/Images/a-study-in-algae.tif"
+path = "C:/Users/valc2/Documents/ITESO/TOG/SPOT5.tif"
+#path = "C:/Users/valc2/Documents/GitHub/Multispectal-Images-GUI/Images/a-study-in-algae.tif"
 obj = image_process(path)
-obj.MedianFilter(original=True, resize=False)
-#$obj.laplacian_filter()
-#obj.get_rgb_channels(original=True)
+obj.plot_waves()
