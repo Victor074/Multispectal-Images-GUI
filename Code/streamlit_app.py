@@ -109,8 +109,11 @@ class ImageProcess:
         return rendvi
 
 # Streamlit UI
-st.title("Image Processing with Streamlit")
-
+st.title("Multispectral Image Processing")
+st.markdown("""
+This application allows you to apply various filters and processing techniques to multispectral images. It is designed to help visualize and analyze different aspects of the images using OpenCV functions. 
+You can upload an image and choose from a range of filters such as Gaussian Blur, Median Filter, Bilateral Filter, Sobel Edge Detection, and more. Each filter is applied using OpenCV functions, and you can save the modified image after applying the desired filters.
+""")
 uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png", "tif"])
 
 def display_images(original, processed, caption):
@@ -120,8 +123,10 @@ def display_images(original, processed, caption):
 
 if uploaded_file is not None:
     img_processor = ImageProcess()
+    saved_image = ImageProcess()
     image_data = uploaded_file.read()
     img_processor.load_image(image_data)
+    saved_image.load_image(image_data)
     original_img = cv2.cvtColor(img_processor._img, cv2.COLOR_BGR2RGB)
     st.image(original_img, caption='Original Image', use_column_width=True)
 
@@ -130,77 +135,105 @@ if uploaded_file is not None:
     if st.sidebar.button('Add Salt and Pepper Noise'):
         noisy_img = img_processor.salt_and_pepper_noise()
         noisy_img_rgb = cv2.cvtColor(noisy_img, cv2.COLOR_BGR2RGB)
+        st.title("Salt and Pepper Noise")
         display_images(original_img, noisy_img_rgb, 'Salt and Pepper Noise')
         st.write("Salt and Pepper Noise adds random white and black pixels to the image.")
 
     if st.sidebar.button('Gaussian Blur'):
         processed_img = img_processor.GaussianBlur()
         processed_img_rgb = cv2.cvtColor(processed_img, cv2.COLOR_BGR2RGB)
+        saved_image.set_image(saved_image.GaussianBlur())
+        st.title("Gaussian Blur")
         display_images(original_img, processed_img_rgb, 'Gaussian Blur')
-        st.write("Gaussian Blur is used to smooth the image and reduce noise by applying a Gaussian filter.")
-    
+        st.write("Gaussian Blur is used to smooth the image and reduce noise by applying a Gaussian filter. [OpenCV Documentation](https://docs.opencv.org/4.x/d4/d13/tutorial_py_filtering.html)")
+
     if st.sidebar.button('Median Filter'):
         processed_img = img_processor.MedianFilter()
         processed_img_rgb = cv2.cvtColor(processed_img, cv2.COLOR_BGR2RGB)
+        saved_image.set_image(saved_image.MedianFilter())
+        st.title("Median Filter")
         display_images(original_img, processed_img_rgb, 'Median Filter')
-        st.write("Median Filter is used to reduce noise in an image by replacing each pixel's value with the median value of its neighbors.")
-    
+        st.write("Median Filter is used to reduce noise in an image by replacing each pixel's value with the median value of its neighbors. [OpenCV Documentation](https://docs.opencv.org/4.x/d4/d13/tutorial_py_filtering.html)")
+
     if st.sidebar.button('Bilateral Filter'):
         processed_img = img_processor.BilateralFilter()
+        saved_image.set_image(saved_image.BilateralFilter())
         processed_img_rgb = cv2.cvtColor(processed_img, cv2.COLOR_BGR2RGB)
+        st.title("Bilateral Filter")
         display_images(original_img, processed_img_rgb, 'Bilateral Filter')
-        st.write("Bilateral Filter is used to reduce noise while keeping edges sharp by considering both spatial closeness and pixel intensity difference.")
-    
+        st.write("Bilateral Filter is used to reduce noise while keeping edges sharp by considering both spatial closeness and pixel intensity difference. [OpenCV Documentation](https://docs.opencv.org/4.x/d4/d13/tutorial_py_filtering.html)")
+
     if st.sidebar.button('Get RGB Channels'):
         processed_img = img_processor.get_rgb_channels()
         processed_img_rgb = cv2.cvtColor(processed_img, cv2.COLOR_BGR2RGB)
+        st.title("Get RGB Channels")
         display_images(original_img, processed_img_rgb, 'RGB Channels')
         st.write("This operation splits the image into its red, green, and blue channels and then recombines them.")
-    
+
     if st.sidebar.button('Sobel Filter'):
         processed_img = img_processor.sobel()
         processed_img_rgb = cv2.cvtColor(processed_img.astype(np.uint8), cv2.COLOR_BGR2RGB)
+        st.title("Sobel Filte")
         display_images(original_img, processed_img_rgb, 'Sobel Filter')
-        st.write("Sobel Filter is used for edge detection by calculating the gradient of the image intensity at each pixel.")
-    
+        st.write("Sobel Filter is used for edge detection by calculating the gradient of the image intensity at each pixel. [OpenCV Documentation](https://docs.opencv.org/4.x/d2/d2c/tutorial_sobel_derivatives.html)")
+
     if st.sidebar.button('Histogram Equalization'):
         processed_img = img_processor.histogram_equalization()
+        st.title("Histogram Equalization")
         display_images(original_img, processed_img, 'Histogram Equalization')
-        st.write("Histogram Equalization enhances the contrast of the image by spreading out the most frequent intensity values.")
-    
+        st.write("Histogram Equalization enhances the contrast of the image by spreading out the most frequent intensity values. [OpenCV Documentation](https://docs.opencv.org/4.x/d5/daf/tutorial_py_histogram_equalization.html)")
+
     if st.sidebar.button('PCA'):
         processed_img = img_processor.pca()
+        st.title("PCA")
         display_images(original_img, processed_img, 'PCA')
         st.write("Principal Component Analysis (PCA) reduces the dimensionality of the multispectral image while preserving important information.")
-    
+
     if st.sidebar.button('False Color Composite'):
         processed_img = img_processor.false_color_composite()
         processed_img_rgb = cv2.cvtColor(processed_img, cv2.COLOR_BGR2RGB)
+        st.title("False Color Composite")
         display_images(original_img, processed_img_rgb, 'False Color Composite')
         st.write("False Color Composite creates a false-color image to highlight certain features.")
 
     if st.sidebar.button('NDVI'):
         ndvi_img = img_processor.ndvi()
+        st.title("NDVI")
         display_images(original_img, ndvi_img, 'NDVI')
         st.write("NDVI (Normalized Difference Vegetation Index) is used to analyze remote sensing measurements and assess whether the target being observed contains live green vegetation or not.")
     
     if st.sidebar.button('Band Ratio (Red/Green)'):
         ratio_img = img_processor.band_ratio(img_processor.r, img_processor.g)
         display_images(original_img, ratio_img, 'Band Ratio (Red/Green)')
-        st.title("Band Ratio")
+        st.title("Band Ratio (Red/Green)")
         st.write("Band Ratio (Red/Green) highlights specific features by dividing the values of the red band by the green band.")
     
     if st.sidebar.button('DVI'):
         dvi_img = img_processor.dvi()
         display_images(original_img, dvi_img, 'DVI')
+        st.title("DVI")
         st.write("DVI (Difference Vegetation Index) highlights vegetation by subtracting the red band from the near-infrared band.")
     
     if st.sidebar.button('EVI'):
         evi_img = img_processor.evi()
         display_images(original_img, evi_img, 'EVI')
+        st.title("EVI")
         st.write("EVI (Enhanced Vegetation Index) reduces noise from atmospheric conditions and soil background signals, providing a clearer picture of vegetation.")
     
     if st.sidebar.button('RENDVI'):
         rendvi_img = img_processor.rendvi()
         display_images(original_img, rendvi_img, 'RENDVI')
+        st.title("RENDVI")
         st.write("RENDVI (Red Edge Normalized Difference Vegetation Index) uses the red edge band for better vegetation monitoring.")
+    
+    if st.button("Save Image"):
+        img_rgb = cv2.cvtColor(saved_image._img, cv2.COLOR_BGR2RGB)
+        pil_img = Image.fromarray(img_rgb)
+        buf = BytesIO()
+        pil_img.save(buf, format="PNG")
+        byte_im = buf.getvalue()
+        st.download_button(label="Download Image", data=byte_im, file_name="modified_image.png", mime="image/png")
+st.markdown("""
+---
+For more information and to access the source code, visit the [GitHub repository](https://github.com/Victor074/Multispectal-Images-GUI).
+""")
