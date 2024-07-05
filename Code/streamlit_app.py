@@ -173,7 +173,7 @@ if uploaded_file is not None:
     if st.sidebar.button('Sobel Filter'):
         processed_img = img_processor.sobel()
         processed_img_rgb = cv2.cvtColor(processed_img.astype(np.uint8), cv2.COLOR_BGR2RGB)
-        st.title("Sobel Filte")
+        st.title("Sobel Filter")
         display_images(original_img, processed_img_rgb, 'Sobel Filter')
         st.write("Sobel Filter is used for edge detection by calculating the gradient of the image intensity at each pixel. [OpenCV Documentation](https://docs.opencv.org/4.x/d2/d2c/tutorial_sobel_derivatives.html)")
 
@@ -204,26 +204,26 @@ if uploaded_file is not None:
     
     if st.sidebar.button('Band Ratio (Red/Green)'):
         ratio_img = img_processor.band_ratio(img_processor.r, img_processor.g)
-        display_images(original_img, ratio_img, 'Band Ratio (Red/Green)')
         st.title("Band Ratio (Red/Green)")
+        display_images(original_img, ratio_img, 'Band Ratio (Red/Green)')
         st.write("Band Ratio (Red/Green) highlights specific features by dividing the values of the red band by the green band.")
     
     if st.sidebar.button('DVI'):
         dvi_img = img_processor.dvi()
-        display_images(original_img, dvi_img, 'DVI')
         st.title("DVI")
+        display_images(original_img, dvi_img, 'DVI')
         st.write("DVI (Difference Vegetation Index) highlights vegetation by subtracting the red band from the near-infrared band.")
     
     if st.sidebar.button('EVI'):
         evi_img = img_processor.evi()
-        display_images(original_img, evi_img, 'EVI')
         st.title("EVI")
+        display_images(original_img, evi_img, 'EVI')
         st.write("EVI (Enhanced Vegetation Index) reduces noise from atmospheric conditions and soil background signals, providing a clearer picture of vegetation.")
     
     if st.sidebar.button('RENDVI'):
         rendvi_img = img_processor.rendvi()
-        display_images(original_img, rendvi_img, 'RENDVI')
         st.title("RENDVI")
+        display_images(original_img, rendvi_img, 'RENDVI')
         st.write("RENDVI (Red Edge Normalized Difference Vegetation Index) uses the red edge band for better vegetation monitoring.")
     
     if st.button("Save Image"):
